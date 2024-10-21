@@ -65,7 +65,9 @@ class ParsingUtils(BaseUtils):
 
     async def seller_links(self, products: list[dict]) -> list[dict]:
         config = Config(**{
-            "headless": False,
+            "headless": True,
+            'browser_args': ['--no-sandbox'],
+            'no_sandbox': True
         })
         browser = await uc.Browser.create(config=config)
 
