@@ -64,13 +64,16 @@ class ParsingUtils(BaseUtils):
                     return link
 
     async def seller_links(self, products: list[dict]) -> list[dict]:
-        config = Config(**{
-            "headless": True,
-            'browser_args': ['--no-sandbox'],
-            'no_sandbox': True
-        })
-        browser = await uc.Browser.create(config=config)
-
+        # config = Config(**{
+        #     "headless": True,
+        #     'browser_args': ['--no-sandbox'],
+        #     'sandbox': False
+        # })
+        #
+        # browser = await uc.Browser.create(config=config)
+        browser = await uc.start(
+            headless=True, sandbox=False
+        )
         for product in products[:]:
             url = product.get('link')
 
