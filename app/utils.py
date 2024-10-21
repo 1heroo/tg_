@@ -35,8 +35,7 @@ class ParsingUtils(BaseUtils):
         return output_data
 
     async def get_ozon_category_products(self, category_url: str) -> list[dict]:
-        browser = await uc.start(
-        )
+        browser = await uc.start()
         page = await browser.get(category_url)
         await page.sleep(4)
         await page.scroll_down(100)
@@ -61,16 +60,8 @@ class ParsingUtils(BaseUtils):
                     return link
 
     async def seller_links(self, products: list[dict]) -> list[dict]:
-        # config = Config(**{
-        #     "headless": True,
-        #     'browser_args': ['--no-sandbox'],
-        #     'sandbox': False
-        # })
-        #
-        # browser = await uc.Browser.create(config=config)
-        browser = await uc.start(
-            headless=True, sandbox=False
-        )
+        browser = await uc.start()
+
         for product in products[:]:
             url = product.get('link')
 
@@ -103,9 +94,8 @@ class ParsingUtils(BaseUtils):
             return text_content, ogrn
 
     async def extract_info_from_seller_page(self, products: list[dict]) -> list[dict]:
-        browser = await uc.start(
-            headless=True, sandbox=False
-        )
+        browser = await uc.start()
+
         for product in products[:]:
             url = product.get('seller_link')
 
