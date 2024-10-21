@@ -1,0 +1,4 @@
+venv/
+dataframe.xlsx
+.idea/
+__pycache__/
