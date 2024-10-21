@@ -23,6 +23,6 @@ class Services:
                 'Продавец': product.get('seller_link'),
                 'Товар': product.get('link')
             }
-            for product in products
+            for product in products if product.get('ogrn')
         ]
 
