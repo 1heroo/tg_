@@ -1,7 +1,6 @@
 import asyncio
 
 from bs4 import Tag
-from playwright.async_api import async_playwright
 import bs4
 import nodriver as uc
 
