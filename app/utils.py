@@ -36,7 +36,7 @@ class ParsingUtils(BaseUtils):
 
     async def get_ozon_category_products(self, category_url: str) -> list[dict]:
         browser = await uc.start(
-            headless=False, sandbox=False
+            headless=True, sandbox=False
         )
         page = await browser.get(category_url)
         await page.sleep(4)
