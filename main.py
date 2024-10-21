@@ -10,7 +10,7 @@ from aiogram.types import Message, InputFile, FSInputFile, BufferedInputFile
 
 from app.services import Services
 
-TOKEN = '6355925335:AAFufqe03Hm90KXe1MyxZf4jQiFzrtsfk6Y'
+TOKEN = '2069735092:AAFybLlvXLHi1-OO2YOau99SKW6nWPECC4I'
 
 
 dp = Dispatcher()
@@ -39,20 +39,23 @@ async def start(message: Message):
 
 @dp.message()
 async def message_handler(message: Message):
-    link = message.text
+    try:
+        link = message.text
 
-    if link and not link.startswith('https://'):
-        await message.answer('Введите корректную ссылку')
-        return
+        if link and not link.startswith('https://'):
+            await message.answer('Введите корректную ссылку')
+            return
 
-    await message.answer('Ожидайте')
-    data = await services.launch_parsing(link)
-    df = pd.DataFrame(data)
+        await message.answer('Ожидайте')
+        data = await services.launch_parsing(link)
+        df = pd.DataFrame(data)
 
-    filename = 'dataframe.xlsx'
-    df.to_excel(filename, index=False)
-    await bot.send_document(chat_id=message.chat.id, document=BufferedInputFile.from_file(filename), reply_to_message_id=message.message_id)
-
+        filename = 'dataframe.xlsx'
+        df.to_excel(filename, index=False)
+        await bot.send_document(chat_id=message.chat.id, document=BufferedInputFile.from_file(filename),
+                                reply_to_message_id=message.message_id)
+    except Exception as e:
+        await message.answer(f'Ошибка {e}, попробуйте снова ')
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
