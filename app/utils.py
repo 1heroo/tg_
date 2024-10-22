@@ -16,7 +16,6 @@ class ParsingUtils(BaseUtils):
     def parse_products_from_category_page_ozon(html: str) -> list[dict]:
         soup = bs4.BeautifulSoup(html, features='lxml')
         products = soup.find_all('div', class_='tile-root')
-        print(len(products))
 
         output_data = []
         for product in products:
@@ -36,16 +35,21 @@ class ParsingUtils(BaseUtils):
 
     async def get_ozon_category_products(self, category_url: str) -> list[dict]:
         browser = await uc.start()
-        page = await browser.get(category_url)
-        await page.sleep(5)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.sleep(4)
 
-        products = self.parse_products_from_category_page_ozon(html=await page.get_content())
-        await asyncio.sleep(2)
+        products = []
+        for page_index in range(1, 10, 3):
+            url = category_url + f'&page={page_index}'
+            page = await browser.get(url)
+            await page.sleep(5)
+            await page.scroll_down(100)
+            await page.scroll_down(100)
+            await page.scroll_down(100)
+            await page.scroll_down(100)
+            await page.sleep(4)
+
+            products += self.parse_products_from_category_page_ozon(html=await page.get_content())
+            await asyncio.sleep(2)
+
         browser.stop()
         return products
 
