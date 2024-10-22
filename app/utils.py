@@ -37,12 +37,12 @@ class ParsingUtils(BaseUtils):
     async def get_ozon_category_products(self, category_url: str) -> list[dict]:
         browser = await uc.start()
         page = await browser.get(category_url)
+        await page.sleep(5)
+        await page.scroll_down(100)
+        await page.scroll_down(100)
+        await page.scroll_down(100)
+        await page.scroll_down(100)
         await page.sleep(4)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.scroll_down(100)
-        await page.sleep(3)
 
         products = self.parse_products_from_category_page_ozon(html=await page.get_content())
         await asyncio.sleep(2)
@@ -103,10 +103,10 @@ class ParsingUtils(BaseUtils):
                 continue
 
             page = await browser.get(url)
-            await page.sleep(3)
+            await page.sleep(4)
 
             btn = await page.find(text='О магазине', timeout=15)
-            await page.sleep(1)
+            await page.sleep(2)
 
             await btn.click()
             await btn.click()
@@ -115,7 +115,7 @@ class ParsingUtils(BaseUtils):
             await page.sleep(5)
             info, ogrn = self.extrack_info(await page.get_content())
             product.update({'info': info,  'ogrn': ogrn})
-            await page.sleep(2)
+            await page.sleep(3)
 
         browser.stop()
         return products
