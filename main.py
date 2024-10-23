@@ -10,6 +10,7 @@ from aiogram.types import Message, InputFile, FSInputFile, BufferedInputFile
 
 from app.services import Services
 
+
 TOKEN = '2069735092:AAFybLlvXLHi1-OO2YOau99SKW6nWPECC4I'
 
 
@@ -66,6 +67,8 @@ async def message_handler(message: Message):
         working = False
     except Exception as e:
         await message.answer(f'Ошибка {e}, попробуйте снова ')
+        working = False
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
