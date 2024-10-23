@@ -67,17 +67,20 @@ class ParsingUtils(BaseUtils):
         browser = await uc.start()
 
         for product in products[:]:
-            url = product.get('link')
+            try:
+                url = product.get('link')
 
-            page = await browser.get(url)
-            await page.sleep(4)
-            await page.scroll_down(100)
-            await page.sleep(3)
+                page = await browser.get(url)
+                await page.sleep(4)
+                await page.scroll_down(100)
+                await page.sleep(3)
 
-            seller_link = self.extract_seller_link(await page.get_content())
-            if seller_link:
-                product.update({'seller_link': seller_link})
-            await asyncio.sleep(2)
+                seller_link = self.extract_seller_link(await page.get_content())
+                if seller_link:
+                    product.update({'seller_link': seller_link})
+                await asyncio.sleep(2)
+            except Exception as e:
+                print('seller parsing', e)
 
         browser.stop()
         return products
@@ -101,25 +104,28 @@ class ParsingUtils(BaseUtils):
         browser = await uc.start()
 
         for product in products[:]:
-            url = product.get('seller_link')
+            try:
+                url = product.get('seller_link')
 
-            if not url:
-                continue
+                if not url:
+                    continue
 
-            page = await browser.get(url)
-            await page.sleep(4)
+                page = await browser.get(url)
+                await page.sleep(4)
 
-            btn = await page.find(text='О магазине', timeout=15)
-            await page.sleep(2)
+                btn = await page.find(text='О магазине', timeout=15)
+                await page.sleep(2)
 
-            await btn.click()
-            await btn.click()
-            print(btn, 'clicked')
+                await btn.click()
+                await btn.click()
+                print(btn, 'clicked')
 
-            await page.sleep(5)
-            info, ogrn = self.extrack_info(await page.get_content())
-            product.update({'info': info,  'ogrn': ogrn})
-            await page.sleep(3)
+                await page.sleep(5)
+                info, ogrn = self.extrack_info(await page.get_content())
+                product.update({'info': info, 'ogrn': ogrn})
+                await page.sleep(3)
+            except Exception as e:
+                print('seller_data parsing error', e)
 
         browser.stop()
         return products
