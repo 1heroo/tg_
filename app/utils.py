@@ -67,6 +67,7 @@ class ParsingUtils(BaseUtils):
         browser = await uc.start()
 
         for product in products[:]:
+
             try:
                 url = product.get('link')
 
@@ -79,6 +80,7 @@ class ParsingUtils(BaseUtils):
                 if seller_link:
                     product.update({'seller_link': seller_link})
                 await asyncio.sleep(2)
+                print(products.index(product), 'index getting seller link')
             except Exception as e:
                 print('seller parsing', e)
 
@@ -124,6 +126,7 @@ class ParsingUtils(BaseUtils):
                 info, ogrn = self.extrack_info(await page.get_content())
                 product.update({'info': info, 'ogrn': ogrn})
                 await page.sleep(3)
+                print(products.index(product), 'index getting seller info')
             except Exception as e:
                 print('seller_data parsing error', e)
 
