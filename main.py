@@ -44,6 +44,8 @@ async def message_handler(message: Message):
 
     if working:
         await message.answer('Сейчас обрабтывается категория, ожидайте')
+        return
+
     try:
         working = True
         link = message.text
