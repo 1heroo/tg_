@@ -17,6 +17,7 @@ dp = Dispatcher()
 bot = Bot(token=TOKEN)
 
 services = Services()
+working = False
 
 
 async def send_message_b_link(message: Message):
@@ -39,7 +40,12 @@ async def start(message: Message):
 
 @dp.message()
 async def message_handler(message: Message):
+    global working
+
+    if working:
+        await message.answer('Сейчас обрабтывается категория, ожидайте')
     try:
+        working = True
         link = message.text
 
         if link and not link.startswith('https://'):
@@ -54,6 +60,8 @@ async def message_handler(message: Message):
         df.to_excel(filename, index=False)
         await bot.send_document(chat_id=message.chat.id, document=BufferedInputFile.from_file(filename),
                                 reply_to_message_id=message.message_id)
+
+        working = False
     except Exception as e:
         await message.answer(f'Ошибка {e}, попробуйте снова ')
 
