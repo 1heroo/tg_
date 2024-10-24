@@ -37,7 +37,7 @@ class ParsingUtils(BaseUtils):
         browser = await uc.start()
 
         products = []
-        for page_index in range(1, 31, 3):
+        for page_index in range(1, 2, 3):
             url = category_url + f'&page={page_index}'
             page = await browser.get(url)
             await page.sleep(5)
