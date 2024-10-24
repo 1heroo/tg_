@@ -13,8 +13,13 @@ class Services:
         products = await self.parsing_utils.get_ozon_category_products(category_url)
         print(len(products))
         products = await self.parsing_utils.seller_links(products)
+
+        products = {
+            product.get('seller_link'): product
+            for product in products
+        }
+        products = list(products.values())
         products = await self.parsing_utils.extract_info_from_seller_page(products)
-        # КСТАТЕ СЕГОДНЯ ПРЕМИЯ
 
         return [
             {
