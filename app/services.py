@@ -12,7 +12,6 @@ class Services:
 
         products = await self.parsing_utils.get_ozon_category_products(category_url)
         print(len(products))
-        products = products[-1:]
         products = await self.parsing_utils.seller_links(products)
 
         products = {
