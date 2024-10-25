@@ -48,7 +48,6 @@ async def message_handler(message: Message):
         return
 
     try:
-        working = True
         link = message.text
 
         if link and not link.startswith('https://'):
@@ -56,6 +55,8 @@ async def message_handler(message: Message):
             return
 
         await message.answer('Ожидайте')
+        working = True
+
         data = await services.launch_parsing(link)
         df = pd.DataFrame(data)
 
