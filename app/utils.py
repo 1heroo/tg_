@@ -37,7 +37,7 @@ class ParsingUtils(BaseUtils):
         browser = await uc.start()
 
         products = []
-        for page_index in range(1, 31, 3):
+        for page_index in range(1, 2, 3):
             url = category_url + f'&page={page_index}'
             page = await browser.get(url)
             await page.sleep(5)
@@ -87,20 +87,30 @@ class ParsingUtils(BaseUtils):
         browser.stop()
         return products
 
-    def extrack_info(self, html: str) -> str:
+    def extract_info(self, html: str) -> str:
         soup = bs4.BeautifulSoup(html, features='lxml')
         seller_div = soup.find_all('div', {'data-widget': 'textBlock'})
+
+        seller_info = soup.find('div', {'data-widget': 'shopInfo'})
+        works_with_ozon = None
+
+        if seller_info:
+            w_text = 'Работает с Ozon'
+            for i in seller_info:
+                if w_text in i.text:
+                    works_with_ozon = i.text.replace(w_text, '')
 
         if seller_div:
             text = seller_div[-1].find('span')
             text_content: str = text.get_text(separator="\n", strip=True)
+            print(text_content)
 
             ogrn = None
             for line in text_content.splitlines():
                 if line.isdigit():
                     ogrn = line
 
-            return text_content, ogrn
+            return text_content, ogrn, works_with_ozon
 
     async def extract_info_from_seller_page(self, products: list[dict]) -> list[dict]:
         browser = await uc.start()
@@ -123,8 +133,8 @@ class ParsingUtils(BaseUtils):
                 print(btn, 'clicked')
 
                 await page.sleep(5)
-                info, ogrn = self.extrack_info(await page.get_content())
-                product.update({'info': info, 'ogrn': ogrn})
+                info, ogrn, works_with_ozon = self.extract_info(await page.get_content())
+                product.update({'info': info, 'ogrn': ogrn, 'works_with_ozon': works_with_ozon})
                 await page.sleep(3)
                 print(products.index(product), 'index getting seller info')
             except Exception as e:
