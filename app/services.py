@@ -11,16 +11,18 @@ class Services:
         category_url += '?sorting=new'
 
         products = await self.parsing_utils.get_ozon_category_products(category_url)
+        products = products[:5]
         products = await self.parsing_utils.seller_links(products)
 
+        print(len(products))
         products = {
             product.get('seller_link'): product
             for product in products
         }
-        products = list(products.values())
         print(products)
+        products = list(products.values())
         products = await self.parsing_utils.extract_info_from_seller_page(products)
-
+        print(products)
         return [
             {
                 'Наименование': product.get('title'),
