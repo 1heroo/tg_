@@ -15,6 +15,7 @@ class ParsingUtils(BaseUtils):
     @staticmethod
     def parse_products_from_category_page_ozon(html: str) -> list[dict]:
         soup = bs4.BeautifulSoup(html, features='lxml')
+        print(soup)
         products = soup.find_all('div', class_='tile-root')
         print(products)
         output_data = []
