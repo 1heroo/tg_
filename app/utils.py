@@ -16,7 +16,7 @@ class ParsingUtils(BaseUtils):
     def parse_products_from_category_page_ozon(html: str) -> list[dict]:
         soup = bs4.BeautifulSoup(html, features='lxml')
         products = soup.find_all('div', class_='tile-root')
-
+        print(products)
         output_data = []
         for product in products:
             a_tags = product.find_all('a')
