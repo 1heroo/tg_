@@ -1,9 +1,14 @@
 import asyncio
+import time
 
 from bs4 import Tag
 import bs4
-import nodriver as uc
+# import nodriver as uc
+import undetected_chromedriver as uc
 from nodriver.core.config import Config
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 class BaseUtils:
@@ -15,9 +20,8 @@ class ParsingUtils(BaseUtils):
     @staticmethod
     def parse_products_from_category_page_ozon(html: str) -> list[dict]:
         soup = bs4.BeautifulSoup(html, features='lxml')
-        print(soup)
         products = soup.find_all('div', class_='tile-root')
-        print(products)
+
         output_data = []
         for product in products:
             a_tags = product.find_all('a')
@@ -35,23 +39,22 @@ class ParsingUtils(BaseUtils):
         return output_data
 
     async def get_ozon_category_products(self, category_url: str) -> list[dict]:
-        browser = await uc.start()
+        browser = uc.Chrome()
 
         products = []
         for page_index in range(1, 2, 3):
             url = category_url + f'&page={page_index}'
-            page = await browser.get(url)
-            await page.sleep(5)
-            await page.scroll_down(100)
-            await page.scroll_down(100)
-            await page.scroll_down(100)
-            await page.scroll_down(100)
-            await page.sleep(4)
+            browser.get(url)
+            time.sleep(3)
+            browser.execute_script("window.scrollBy(0, 1000);")
+            browser.execute_script("window.scrollBy(0, 1000);")
+            browser.execute_script("window.scrollBy(0, 1000);")
+            browser.execute_script("window.scrollBy(0, 1000);")
+            time.sleep(2)
+            products += self.parse_products_from_category_page_ozon(html=browser.page_source)
+            time.sleep(1)
 
-            products += self.parse_products_from_category_page_ozon(html=await page.get_content())
-            await asyncio.sleep(2)
-
-        browser.stop()
+        browser.quit()
         return products
 
     def extract_seller_link(self, html) -> str:
@@ -65,29 +68,27 @@ class ParsingUtils(BaseUtils):
                     return link
 
     async def seller_links(self, products: list[dict]) -> list[dict]:
-        browser = await uc.start()
+        browser = uc.Chrome()
 
         for product in products[:]:
 
             try:
                 url = product.get('link')
 
-                page = await browser.get(url)
-                await page.sleep(4)
-                await page.scroll_down(100)
-                await page.sleep(3)
+                browser.get(url)
+                time.sleep(4)
+                browser.execute_script("window.scrollBy(0, 1000);")
+                time.sleep(3)
 
-                seller_link = self.extract_seller_link(await page.get_content())
+                seller_link = self.extract_seller_link(browser.page_source)
                 if seller_link:
                     product.update({'seller_link': seller_link})
-                await asyncio.sleep(2)
+                time.sleep(1)
                 print(products.index(product), 'index getting seller link')
             except Exception as e:
                 print('seller parsing', e)
 
-        try:
-            browser.stop()
-        except: pass
+        browser.quit()
         return products
 
     def extract_info(self, html: str) -> str:
@@ -116,35 +117,32 @@ class ParsingUtils(BaseUtils):
             return text_content, ogrn, works_with_ozon
 
     async def extract_info_from_seller_page(self, products: list[dict]) -> list[dict]:
-        browser = await uc.start()
+        browser = uc.Chrome()
 
         for product in products[:]:
             try:
                 url = product.get('seller_link')
-
                 if not url:
                     continue
 
-                page = await browser.get(url)
-                await page.sleep(4)
+                browser.get(url)
+                time.sleep(4)
 
-                btn = await page.find(text='О магазине', timeout=15)
-                await page.sleep(2)
-
-                await btn.click()
-                await btn.click()
+                btn = WebDriverWait(browser, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'О магазине')]"))
+                )
+                print(btn.text)
+                btn.click()
                 print(btn, 'clicked')
 
-                await page.sleep(5)
-                info, ogrn, works_with_ozon = self.extract_info(await page.get_content())
+                time.sleep(5)
+                info, ogrn, works_with_ozon = self.extract_info(browser.page_source)
                 product.update({'info': info, 'ogrn': ogrn, 'works_with_ozon': works_with_ozon})
-                await page.sleep(3)
+                time.sleep(3)
                 print(products.index(product), 'index getting seller info')
             except Exception as e:
-                print('seller_data parsing error', e)
+                print('seller_data parsing error', str(e)[:300])
 
-        try:
-            browser.stop()
-        except: pass
+        browser.quit()
         return products
 
