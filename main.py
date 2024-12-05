@@ -72,5 +72,7 @@ async def message_handler(message: Message):
 
 
 if __name__ == '__main__':
-    # logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     asyncio.run(main())
