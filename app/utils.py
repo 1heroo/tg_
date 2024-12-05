@@ -1,6 +1,7 @@
 import asyncio
 import time
 
+import pyautogui
 from bs4 import Tag
 import bs4
 # import nodriver as uc
@@ -120,14 +121,18 @@ class ParsingUtils(BaseUtils):
 
     async def extract_info_from_seller_page(self, products: list[dict]) -> list[dict]:
         options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--remote-debugging-port=9222")
-        options.add_argument("--disable-blink-features=AutomationControlled")
+        proxy = "http://46.174.197.103:4140"
+        options.add_argument(f'--proxy-server={proxy}')
 
         browser = uc.Chrome(options=options)
+
+        browser.get('https://2ip.ru')
+        pyautogui.write('user61433')
+        pyautogui.press('tab')
+
+        pyautogui.write('8421d9')
+        pyautogui.press('enter')
+        time.sleep(2)
         for product in products[:]:
             try:
                 url = product.get('seller_link')
