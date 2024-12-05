@@ -93,6 +93,7 @@ class ParsingUtils(BaseUtils):
 
     def extract_info(self, html: str) -> str:
         soup = bs4.BeautifulSoup(html, features='lxml')
+        print(soup)
         seller_div = soup.find_all('div', {'data-widget': 'textBlock'})
 
         seller_info = soup.find('div', {'data-widget': 'shopInfo'})
@@ -126,13 +127,23 @@ class ParsingUtils(BaseUtils):
                     continue
 
                 browser.get(url)
-                time.sleep(4)
+                time.sleep(3)
+
+                try:
+                    overlays = browser.find_elements(By.XPATH,
+                                                     "//*[contains(@style, 'display') or contains(@class, 'overlay')]")
+                    for overlay in overlays:
+                        if overlay.is_displayed():
+                            browser.execute_script("arguments[0].click();", overlay)
+                except Exception:
+                    pass  # Если перекрывающих элементов нет, продолжаем
 
                 btn = WebDriverWait(browser, 10).until(
                     EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'О магазине')]"))
                 )
-                print(btn.text)
-                btn.click()
+                browser.execute_script("arguments[0].scrollIntoView(true);", btn)
+                browser.execute_script("arguments[0].click();", btn)
+
                 print(btn, 'clicked')
 
                 time.sleep(5)
@@ -141,7 +152,7 @@ class ParsingUtils(BaseUtils):
                 time.sleep(3)
                 print(products.index(product), 'index getting seller info')
             except Exception as e:
-                print('seller_data parsing error', str(e)[:300])
+                print('seller_data parsing error', str(e))
 
         browser.quit()
         return products
