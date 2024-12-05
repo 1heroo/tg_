@@ -146,13 +146,16 @@ class ParsingUtils(BaseUtils):
                 except Exception:
                     pass  # Если перекрывающих элементов нет, продолжаем
 
-                btn = WebDriverWait(browser, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'О магазине')]"))
-                )
-                browser.execute_script("arguments[0].scrollIntoView(true);", btn)
-                browser.execute_script("arguments[0].click();", btn)
+                try:
+                    btn = WebDriverWait(browser, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//*[contains(text(), 'О магазине')]"))
+                    )
+                    browser.execute_script("arguments[0].scrollIntoView(true);", btn)
+                    browser.execute_script("arguments[0].click();", btn)
 
-                print(btn, 'clicked')
+                    print(btn, 'clicked')
+                except Exception as e:
+                    print(3)
 
                 time.sleep(5)
                 info, ogrn, works_with_ozon = self.extract_info(browser.page_source)
